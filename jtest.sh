@@ -9,9 +9,7 @@ DIRBIN=$HOME/bin
 
 
 OUTDIR=$HOME/Desktop
-if [ ! -d $OUTDIR ]; then
-    mkdir -p $OUTDIR
-fi
+[ ! -d $OUTDIR ] && mkdir -p $OUTDIR
 
 OUTFILE=$OUTDIR/'ID'
 
@@ -72,11 +70,16 @@ for ID in $SERVERS; do
 done
 rm -f $TMPFILE $TMP2FILE $LOGFILE
 
-[ -n `< $OUTDIR/E-mail.txt` ] || exit 0
+if [ -n `< $OUTDIR/E-mail.txt` ]; then
+    log "Error. E-mail.txt is empty or e-mail incorrect"
+    exit 0
+fi
+
 [ `$DIRSYSBIN/find $OUTDIR -name *.pdf -print | wc -l` -gt 0 ] || exit 0
 ATTLIST=''
 for ID in `$DIRSYSBIN/find $OUTDIR -name *.pdf -print`; do
     if [ `$DIRSYSBIN/head -n1 -q $ID` != "%PDF-1.4" ]; then
+        log "Error in PDF: "$ID
         rm -f $ID 2>/dev/null
         continue
     fi
@@ -85,6 +88,7 @@ done
 [ -n "$ATTLIST" ] || exit 0
 RECEIVER=`head -q -n1 $OUTDIR/E-mail.txt 2>/dev/null| grep -E -e'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}$'`
 [ -n "$RECEIVER" ] || exit 0
+log "Sent e-mail to "$RECEIVER
 echo "Only for Technical Support. Don't distribute this files" | \
      mailx $ATTLIST --subject="Speedtest measurements at `date +'%Y-%m-%d %H:%M:%S %Z'`" $RECEIVER 2>/dev/null
 exit
