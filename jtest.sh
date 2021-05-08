@@ -23,11 +23,6 @@ function log {
     echo `date +'%Y-%m-%d %H:%M:%S %Z'` $1 | tee -a $LOGFILE
 }
 
-function round() {
-    local df=3
-    retval=`echo "scale=3; $1 / 1" | bc -l`
-}
-
 case "$PROCESSOR" in
     armv7l) INTF=wlan0
             ;;
@@ -69,11 +64,27 @@ for ID in $SERVERS; do
                             --output=- $LOGFILE.$ID.txt 2>/dev/null |\
         $DIRSYSBIN/ps2pdf - $OUTFILE.$ID.`date +'%Y-%m-%d.%H:%M:%S'`.pdf
 
-        rm -f $LOGFILE.$ID.ps $LOGFILE.$ID.txt $TMPFILE $LOGFILE
+        rm -f $LOGFILE.$ID.ps $LOGFILE.$ID.txt $TMPFILE $LOGFILE 2>/dev/null
     else
         log 'Error'
     fi
     log
 done
 rm -f $TMPFILE $TMP2FILE $LOGFILE
+
+[ `$DIRSYSBIN/find $OUTDIR -name *.pdf -print | wc -l` -gt 0 ] || exit 0
+ATTLIST=''
+for ID in `$DIRSYSBIN/find $OUTDIR -name *.pdf -print`; do
+    if [ `$DIRSYSBIN/head -n1 -q $ID` != "%PDF-1.4" ]; then
+        rm -f $ID 2>/dev/null
+        continue
+    fi
+    ATTLIST='--attach='$ID' '$ATTLIST
+done
+[ -n "$ATTLIST" ] || exit 0
+RECEIVER=`head -q -n1 $OUTDIR/E-mail.txt 2>/dev/null| grep -E -e'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}$'`
+[ -n "$RECEIVER" ] || exit 0
+echo "Only for Technical Support. Don't distribute this files" | \
+    mailx $ATTLIST --subject="Speedtest measurements at `date +'%Y-%m-%d %H:%M:%S %Z'`" $RECEIVER 2>/dev/null
 exit
+
