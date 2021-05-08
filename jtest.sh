@@ -70,7 +70,7 @@ for ID in $SERVERS; do
 done
 rm -f $TMPFILE $TMP2FILE $LOGFILE
 
-if [ -n `< $OUTDIR/E-mail.txt` ]; then
+if [ -z `< $OUTDIR/E-mail.txt` ]; then
     log "Error. E-mail.txt is empty or e-mail incorrect"
     exit 0
 fi
