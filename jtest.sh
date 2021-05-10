@@ -15,7 +15,7 @@ OUTFILE=$OUTDIR/'ID'
 
 rm -f $TMPFILE $TMP2FILE $LOGFILE $LOGFILE.* $OUTFILE.*
 
-SERVERS='4484 2278 4275 26129'
+SERVERS='4484' # 2278 4275 26129'
 
 function log {
     echo `date +'%Y-%m-%d %H:%M:%S %Z'` $1 | tee -a $LOGFILE
