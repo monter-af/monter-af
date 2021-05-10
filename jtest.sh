@@ -25,10 +25,12 @@ case "$PROCESSOR" in
     armv7l)
             INTF=wlan0
             MAILATT='-a '
+            MAILSUBJ='-s '
             ;;
     *)
             INTF=en000rtk
             MAILATT='--attach='
+            MAILSUBJ='--subject='
             ;;
 esac
 
@@ -93,7 +95,7 @@ for ID in `$DIRSYSBIN/find $OUTDIR -name *.pdf -print`; do
 done
 [ -n "$ATTLIST" ] || exit 0
 log "Sent e-mail to "$RECEIVER
-echo "Only for Technical Support. Don't distribute this files" | \
-     mailx $ATTLIST --subject="Speedtest measurements at `date +'%Y-%m-%d %H:%M:%S %Z'`" $RECEIVER # 2>/dev/null
+echo 'Only for Technical Support. Don't distribute this files' | \
+     mailx $ATTLIST $MAILSUBJ'Speedtest measurements at `date +'%Y-%m-%d %H:%M:%S %Z'`' $RECEIVER # 2>/dev/null
 exit
 
