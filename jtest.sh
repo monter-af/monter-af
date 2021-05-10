@@ -94,6 +94,6 @@ done
 [ -n "$ATTLIST" ] || exit 0
 log "Sent e-mail to "$RECEIVER
 echo "Only for Technical Support. Don't distribute this files" | \
-     mailx $ATTLIST --subject="Speedtest measurements at `date +'%Y-%m-%d %H:%M:%S %Z'`" $RECEIVER 2>/dev/null
+     mailx $ATTLIST --subject="Speedtest measurements at `date +'%Y-%m-%d %H:%M:%S %Z'`" $RECEIVER # 2>/dev/null
 exit
 
