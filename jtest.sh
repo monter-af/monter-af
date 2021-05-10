@@ -54,6 +54,7 @@ for ID in $SERVERS; do
         log 'Upload bytes: '$UPBYTES
         log 'URL: '$RESURL
         log 'Measurements completed'
+        log 'Make PDF'
         cat $LOGFILE $TMPFILE >>$LOGFILE.$ID.txt
         $DIRSYSBIN/enscript --language=PostScript \
                             --title="Speedtest for $HSNAME" \
@@ -70,7 +71,8 @@ for ID in $SERVERS; do
 done
 rm -f $TMPFILE $TMP2FILE $LOGFILE
 
-if [ -z `< $OUTDIR/E-mail.txt` ]; then
+RECEIVER=`head -q -n1 $OUTDIR/E-mail.txt 2>/dev/null| grep -E -e'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}$'`
+if [ -z "$RECEIVER" ]; then
     log "Error. E-mail.txt is empty or e-mail incorrect"
     exit 0
 fi
@@ -86,8 +88,6 @@ for ID in `$DIRSYSBIN/find $OUTDIR -name *.pdf -print`; do
     ATTLIST='--attach='$ID' '$ATTLIST
 done
 [ -n "$ATTLIST" ] || exit 0
-RECEIVER=`head -q -n1 $OUTDIR/E-mail.txt 2>/dev/null| grep -E -e'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}$'`
-[ -n "$RECEIVER" ] || exit 0
 log "Sent e-mail to "$RECEIVER
 echo "Only for Technical Support. Don't distribute this files" | \
      mailx $ATTLIST --subject="Speedtest measurements at `date +'%Y-%m-%d %H:%M:%S %Z'`" $RECEIVER 2>/dev/null
