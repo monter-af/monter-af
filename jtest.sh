@@ -15,7 +15,7 @@ OUTFILE=$OUTDIR/'ID'
 
 rm -f $TMPFILE $TMP2FILE $LOGFILE $LOGFILE.* $OUTFILE.*
 
-SERVERS='4484' # 2278 4275 26129'
+SERVERS='4484 2278 4275 26129'
 
 function log {
     echo `date +'%Y-%m-%d %H:%M:%S %Z'` $1 | tee -a $LOGFILE
@@ -97,6 +97,6 @@ done
 log "Sent e-mail to "$RECEIVER
 TIMESTAMP=`date +'%Y-%m-%d %H:%M:%S %Z'`
 echo "Only for Technical Support. Don't distribute this files" | \
-     mailx $ATTLIST $MAILSUBJ"Speedtest measurements at $TIMESTAMP" $RECEIVER # 2>/dev/null
+     mailx $ATTLIST $MAILSUBJ"Speedtest measurements at $TIMESTAMP" $RECEIVER 2>/dev/null
 exit
 
