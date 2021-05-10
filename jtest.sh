@@ -22,9 +22,13 @@ function log {
 }
 
 case "$PROCESSOR" in
-    armv7l) INTF=wlan0
+    armv7l)
+            INTF=wlan0
+            MAILATT='-a '
             ;;
-    *)      INTF=en000rtk
+    *)
+            INTF=en000rtk
+            MAILATT='--attach='
             ;;
 esac
 
@@ -85,7 +89,7 @@ for ID in `$DIRSYSBIN/find $OUTDIR -name *.pdf -print`; do
         rm -f $ID 2>/dev/null
         continue
     fi
-    ATTLIST='--attach='$ID' '$ATTLIST
+    ATTLIST=$MAILATT$ID' '$ATTLIST
 done
 [ -n "$ATTLIST" ] || exit 0
 log "Sent e-mail to "$RECEIVER
