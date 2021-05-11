@@ -6,3 +6,4 @@ cp conf/rules.v6 /etc/iptables/ root:root 0644
 tx conf/postfix.tar.gz /etc/
 cp conf/root /var/spool/cron/crontabs/ root:crontab 0600
 tx conf/ssh.tar.gz /home/monter/.ssh --strip-components=1
+cp conf/10-ipv6-disable.conf /etc/sysctl.d/ root:root 0644
