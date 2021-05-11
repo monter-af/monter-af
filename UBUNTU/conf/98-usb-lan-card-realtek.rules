@@ -1,2 +1,0 @@
-ACTION=="add", SUBSYSTEM=="net", SUBSYSTEMS=="usb", \
-   ATTRS{idVendor}=="0bda", ATTRS{idProduct}=="8153", NAME="en000rtk"
