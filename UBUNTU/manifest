@@ -1,0 +1,8 @@
+cp conf/en000rtk /etc/networkd-dispatcher/routable.d/ root:root 0555
+cp conf/98-usb-lan-card-realtek.rules /etc/udev/rules.d/ root:root 0644
+cp conf/jail.local /etc/fail2ban/ root:root 0644
+cp conf/rules.v4 /etc/iptables/ root:root 0644
+cp conf/rules.v6 /etc/iptables/ root:root 0644
+tx conf/postfix.tar.gz /etc/
+cp conf/root /var/spool/cron/crontabs/ root:crontab 0600
+tx conf/ssh.tar.gz /home/monter/.ssh --strip-components=1

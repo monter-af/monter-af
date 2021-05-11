@@ -1,0 +1,7 @@
+[sshd]
+mode = aggressive
+maxRetry = 3
+findtime = 6h
+bantime = 900
+bantime.increment = true
+bantime.rndtime = 300
