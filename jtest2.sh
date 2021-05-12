@@ -38,6 +38,7 @@ for ID in $SERVERS; do
     log 'Start measurements for a server with an identifier '$ID
 
     $DIRBIN/speedtest --accept-license --progress=no --precision=5 --format=json-pretty --server-id=$ID --interface=$INTF 2>/dev/null 1>$TMPFILE
+exit
     if [ $? -eq 0 ]; then
         PINGJIT=`cat $TMPFILE | $DIRSYSBIN/jq '.ping.jitter'`
         PINGLAT=`cat $TMPFILE | $DIRSYSBIN/jq '.ping.latency'`
