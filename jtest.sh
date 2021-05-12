@@ -1,4 +1,5 @@
 #!/bin/bash
+SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 BASENAME=`basename $0 .sh`
 LOGFILE=$HOME/TEST/$BASENAME.txt
 TMPFILE=$HOME/TEST/$BASENAME.tmp
@@ -37,28 +38,20 @@ esac
 for ID in $SERVERS; do
     log 'Start measurements for a server with an identifier '$ID
 
-    $DIRBIN/speedtest --accept-license --progress=no --precision=5 --format=json-pretty --server-id=$ID --interface=$INTF 2>/dev/null 1>$TMPFILE
+    RESSPEED=`$DIRBIN/speedtest --accept-license --progress=no --precision=5 --format=json --server-id=$ID --interface=$INTF 2>/dev/null 1>$TMPFILE
     if [ $? -eq 0 ]; then
-        PINGJIT=`cat $TMPFILE | $DIRSYSBIN/jq '.ping.jitter'`
-        PINGLAT=`cat $TMPFILE | $DIRSYSBIN/jq '.ping.latency'`
-        DNBANDW=`cat $TMPFILE | $DIRSYSBIN/jq '.download.bandwidth * 8 / 1000000'`
-        UPBANDW=`cat $TMPFILE | $DIRSYSBIN/jq '.upload.bandwidth * 8 / 1000000'`
-        DNBYTES=`cat $TMPFILE | $DIRSYSBIN/jq '.download.bytes'`
-        UPBYTES=`cat $TMPFILE | $DIRSYSBIN/jq '.upload.bytes'`
-        HSNAME=`cat $TMPFILE | $DIRSYSBIN/jq '.server.host'`
-        HSLOCT=`cat $TMPFILE | $DIRSYSBIN/jq '.server.location'`
-        PKLOSS=`cat $TMPFILE | $DIRSYSBIN/jq '.packetLoss'`
-        RESURL=`cat $TMPFILE | $DIRSYSBIN/jq '.result.url'`
-        log 'Server: '$HSNAME
+	echo $RESSPEED | $DIRSYSBIN/jq --raw-output ".server.host, .server.location, .ping.latency, .ping.jitter, .packetLoss, .download.bandwidth*8/1000000, .upload.bandwidth*8/1000000, .download.bytes, .upload.bytes, .result.url"
+        log 'Server: '${1}
         log 'Server-Id: '$ID
-        log 'Latency: '$PINGLAT' ms'
-        log 'Jitter: '$PINGJIT' ms'
-        log 'Packet Loss: '$PKLOSS' %'
-        log 'Download: '$DNBANDW' Mbps'
-        log 'Upload: '$UPBANDW' Mbps'
-        log 'Download bytes: '$DNBYTES
-        log 'Upload bytes: '$UPBYTES
-        log 'URL: '$RESURL
+	log 'Server-Location: '${2}
+        log 'Latency: '${3}' ms'
+        log 'Jitter: '${4}' ms'
+        log 'Packet Loss: '${5}' %'
+        log 'Download: '${6}' Mbps'
+        log 'Upload: '${7}' Mbps'
+        log 'Download bytes: '${8}
+        log 'Upload bytes: '${9}
+        log 'URL: '${10}
         log 'Measurements completed'
         log 'Make PDF'
         cat $LOGFILE $TMPFILE >>$LOGFILE.$ID.txt
