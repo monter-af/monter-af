@@ -1,10 +1,12 @@
-jq
-postfix
-nmap
-linssid
-mc
-enscript
-ghostprint
-mailutils
-iptables-persistent
-vim
+install jq
+install postfix
+install nmap
+install linssid
+install mc
+install enscript
+install ghostprint
+install mailutils
+install iptables-persistent
+install vim
+install curl
+install imagemagick

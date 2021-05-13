@@ -7,8 +7,8 @@ function log {
 SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 PROCESSOR=`uname -p`
 DIRSYSBIN=/usr/bin
-DIRBIN=$HOME/bin
 FONTSIZE=11
+URL=''
 
 OUTDIR=$HOME/Desktop
 [ ! -d $OUTDIR ] && mkdir -p $OUTDIR
@@ -36,26 +36,27 @@ esac
 for ID in $SERVERS; do
     log 'Start measurements for a server with an identifier '$ID
 
-    RESSPEED=`$DIRBIN/speedtest --accept-license --progress=no --precision=5 --format=json --server-id=$ID --interface=$INTF 2>/dev/null`
+    RESSPEED=`$DIRSYSBIN/speedtest --accept-license --progress=no --precision=5 --format=json --server-id=$ID --interface=$INTF 2>/dev/null`
     if [ $? -eq 0 ]; then
-	TMPRES=`echo $RESSPEED | $DIRSYSBIN/jq --raw-output ".server.host, .server.location, .ping.latency, .ping.jitter, .packetLoss, .download.bandwidth*8/1000000, .upload.bandwidth*8/1000000, .download.bytes, .upload.bytes, .result.url" 2>/dev/null`
+	TMPRES=$( echo $RESSPEED | $DIRSYSBIN/jq --raw-output ".server.host, .server.location, .ping.latency, .ping.jitter, .packetLoss, \
+		.download.bandwidth/125000, .upload.bandwidth/125000, .result.url" ) # 2>/dev/null )
 	set -- $TMPRES
+	URL=$URL'\n'${8}
 	OUTRES=''
 	OUTRES=$OUTRES'@color{1 0 1}Server-Id:   @color{0 0 0}@font{Courier-Bold'$FONTSIZE'}'$ID'@font{default}\n'
 	OUTRES=$OUTRES'@color{1 0 1}Server:      @color{0 0 0}@font{Courier-Bold'$FONTSIZE'}'${1}' ('${2}')@font{default}\n'
-#	OUTRES=$OUTRES'@color{1 0 1}Location:    @color{0 0 0}@font{Courier-Bold'$FONTSIZE'}'${2}'@font{default}\n'
         OUTRES=$OUTRES'@color{1 0 1}Latency:     @color{0 0 0}@font{Courier-Bold'$FONTSIZE'}'${3}'@font{default} ms\n'
         OUTRES=$OUTRES'@color{1 0 1}Jitter:      @color{0 0 0}@font{Courier-Bold'$FONTSIZE'}'${4}'@font{default} ms\n'
         OUTRES=$OUTRES'@color{1 0 1}Packet Loss: @color{0 0 0}@font{Courier-Bold'$FONTSIZE'}'${5}'@font{default} %\n'
         OUTRES=$OUTRES'@color{1 0 0}Download / Upload:    @color{0 0 0}@font{Courier-Bold'$FONTSIZE'}'${6}' / '${7}'@font{default} Mbps\n'
-#        OUTRES=$OUTRES'@color{1 0 0}Upload:      @color{0 0 0}@font{Courier-Bold'$FONTSIZE'}'${7}'@font{default} Mbps\n'
-#        OUTRES=$OUTRES'@color{1 0 1}Download bytes: @color{0 0 0}'${8}'\n'
-#        OUTRES=$OUTRES'@color{1 0 1}Upload bytes:   @color{0 0 0}'${9}'\n'
-        OUTRES=$OUTRES'@color{1 0 1}URL:         @color{0 0 0}@font{Courier-Bold'$FONTSIZE'}'${10}'@font{default}\n\n'
+        OUTRES=$OUTRES'@color{1 0 1}URL:         @color{0 0 0}@font{Courier-Bold'$FONTSIZE'}'${8}'@font{default}\n\n'
 	OUTRES=$OUTRES'@color{0 0 1}'
 	OUTRES=$OUTRES$( echo $RESSPEED | $DIRSYSBIN/jq | $DIRSYSBIN/awk 'BEGIN{ORS="\\n"} {print $0}' )
-	OUTRES=$OUTRES'@color{0 0 0}'
+	OUTRES=$OUTRES'@color{0 0 0}\n'
+	OUTRES=$OUTRES'@epsf[c h3i]{/var/tmp/EPS}'
         log 'Measurements completed'
+	log 'Download and convert an image fron Speedtest.net'
+	$DIRSYSBIN/wget --no-directories --no-parent --quiet --output-document=- "${8}.png"|$DIRSYSBIN/convert PNG:- EPS:/var/tmp/EPS
         log 'Make PDF'
 	echo -e $OUTRES | \
             $DIRSYSBIN/enscript --language=PostScript \
@@ -65,6 +66,7 @@ for ID in $SERVERS; do
                                 --font=Courier$FONTSIZE \
                                 --output=- 2>/dev/null |\
             $DIRSYSBIN/ps2pdf - $OUTFILE.$ID.`date +'%Y-%m-%d.%H:%M:%S'`.pdf
+	rm -f /var/tmp/EPS
     else
         log 'Error'
     fi
@@ -89,7 +91,7 @@ done
 [ -n "$ATTLIST" ] || exit 0
 log "Sent e-mail to "$RECEIVER
 TIMESTAMP=`date +'%Y-%m-%d %H:%M:%S %Z'`
-echo "Only for Technical Support. Don't distribute this files" | \
+echo -e $URL "\nOnly for Technical Support. Don't distribute this files" | \
      mailx $ATTLIST $MAILSUBJ"Speedtest measurements at $TIMESTAMP" $RECEIVER 2>/dev/null
 exit
 
