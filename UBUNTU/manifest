@@ -10,3 +10,4 @@ cp legacy/conf/10-ipv6-disable.conf /etc/sysctl.d/ root:root 0644
 cp lecacy/conf/hosts /etc/ root:root 0644
 cp legacy/bin/speedtest /usr/bin/ root:root 0555 
 cp legacy/conf/policy.xml /etc/ImageMagick-6/ root:root 0444
+cp legacy/conf/config /etc/selinux/config root"root 0444
