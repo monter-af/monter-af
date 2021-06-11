@@ -28,7 +28,11 @@ case "$PROCESSOR" in
             ;;
     *)
             INTF=en000rtk
-            [ "${MACHTYPE}" = "x86_64-suse-linux" ] && INTF=eth0
+            CABUNDLE=''
+            if [ "${MACHTYPE}" = "x86_64-suse-linux" ]; then
+                INTF=eth0
+                CABUNDLE='--ca-certificate=/var/lib/ca-certificates/ca-bundle.pem'
+            fi
             MAILATT='--attach='
             MAILSUBJ='--subject='
             ;;
@@ -39,7 +43,7 @@ INTF=eth0
 for ID in $SERVERS; do
     log 'Start measurements for a server with an identifier '$ID
 
-    RESSPEED=`$DIRSYSBIN/speedtest --accept-license --progress=no --precision=5 --format=json --server-id=$ID --interface=$INTF 2>/dev/null`
+    RESSPEED=`$DIRSYSBIN/speedtest --accept-license --progress=no --precision=5 --format=json --server-id=$ID --interface=$INTF $CABUNDLE 2>/dev/null
     if [ $? -eq 0 ]; then
 	TMPRES=$( echo $RESSPEED | $DIRSYSBIN/jq --raw-output ".server.host, .server.location, .ping.latency, .ping.jitter, .packetLoss, \
 		.download.bandwidth/125000, .upload.bandwidth/125000, .result.url" ) # 2>/dev/null )
