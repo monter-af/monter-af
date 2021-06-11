@@ -28,6 +28,7 @@ case "$PROCESSOR" in
             ;;
     *)
             INTF=en000rtk
+            [ "${MACHTYPE}" = "x86_64-suse-linux" ] && INTF=eth0
             MAILATT='--attach='
             MAILSUBJ='--subject='
             ;;
