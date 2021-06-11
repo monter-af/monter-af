@@ -29,7 +29,7 @@ case "$PROCESSOR" in
     *)
             INTF=en000rtk
             CABUNDLE=''
-            if [ "${MACHTYPE}" = "x86_64-suse-linux" ]; then
+            if [ "${MACHTYPE}" = "x86_64-suse-linux" -o "${MACHTYPE}" = "x86_64-suse-linux-gnu" ]; then
                 INTF=eth0
                 CABUNDLE='--ca-certificate=/var/lib/ca-certificates/ca-bundle.pem'
             fi
