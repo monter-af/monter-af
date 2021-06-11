@@ -34,6 +34,8 @@ case "$PROCESSOR" in
             ;;
 esac
 
+INTF=eth0
+
 for ID in $SERVERS; do
     log 'Start measurements for a server with an identifier '$ID
 
