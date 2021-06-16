@@ -40,8 +40,6 @@ case "$PROCESSOR" in
             ;;
 esac
 
-INTF=eth0
-SERVERS='4484'
 for ID in $SERVERS; do
     log 'Start measurements for a server with an identifier '$ID
 
