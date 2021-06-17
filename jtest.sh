@@ -97,7 +97,7 @@ for ID in `$DIRSYSBIN/find $OUTDIR -name *.pdf -print`; do
 done
 [ -n "$ATTLIST" ] || exit 0
 log "Sent e-mail to "$RECEIVER
-TIMESTAMP=`date +'%Y-%m-%d %H:%M:%S %Z'`
-echo -e $URL "\nOnly for Technical Support. Don't distribute this files" | \
+TIMESTAMP=`date +'%Y-%m-%d %H:%M:%S UTC%Z'`
+echo -e $URL "\nFor Technical Support only. Do not distribute these files" | \
      mailx $ATTLIST $MAILSUBJ"Speedtest measurements at $TIMESTAMP" $RECEIVER #2>/dev/null
 exit
