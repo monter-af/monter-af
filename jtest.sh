@@ -13,7 +13,7 @@ FONTSIZE=11
 URL=''
 
 if [ `uname` = "Linux" ]; then
-    if [ `cat /proc/uptime|cut -d"." -f1` -ge 60 ]; then
+    if [ `cat /proc/uptime|cut -d"." -f1` -le 60 ]; then
         log "Too short uptime... Wait for 60 seconds"
         exit 0
     fi
