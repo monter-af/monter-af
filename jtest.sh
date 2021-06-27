@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export LC_ALL=C
+
 function log {
     echo `date +'%Y-%m-%d %H:%M:%S %Z'` $1
 }
