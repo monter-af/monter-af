@@ -109,7 +109,8 @@ log "Sent e-mail to "$RECEIVER
 TIMESTAMP=`date +'%Y-%m-%d %H:%M:%S UTC%Z'`
 echo -e $URL "\nFor Technical Support only. Do not distribute these files" | \
      mailx $ATTLIST $MAILSUBJ"Speedtest measurements at $TIMESTAMP" $RECEIVER #2>/dev/null
-exit
+
+#exit
 #!/bin/bash
 
 base64 -d <<EOF | aplay -Dsysdefault -q --disable-softvol
@@ -3485,3 +3486,5 @@ AQD+/wAA//8AAP//AQD//wAAAgD9/wMA/v8AAAIA/f8DAP3/AQD//wEAAQD//wEA/v8BAP7/AwD+
 AAAA//8CAP7/AQAAAP7/AgD+/wEAAQD+/wMA/v8BAAIA/v8DAP//AAAAAAAA//8BAP7/AgD+/wEA
 //8AAAEA//8CAP7/AgD+/wIA/f8EAPv/BAD7/wMA/f8DAP7/AQAAAAEA
 EOF
+
+exit
