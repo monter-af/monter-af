@@ -7,7 +7,7 @@ function log {
 }
 
 function playBlam {
-cat <<EOF | base64 -d | aplay -Dsysdefault -q --disable-softvol
+cat <<EOF | base64 -d | aplay -Dsysdefault -q --disable-softvol 2>/dev/null
 UklGRnzuAgBXQVZFZm10IBAAAAABAAIARKwAABCxAgAEABAAZGF0YVjuAgDh/9////8BAAIAAADm
 /+f/3f/a/+f/4v8DAAkA9f/6//z/+v8FAP//AwAJAO7/+//t//D/9P/5////CQDt//v/8f/z/+7/
 8P8DAAcA+v/x/+7/6v8DAAEA+//x/wMA/P/+//7////3//L/4P/8//r/9/8BAPf/BQDx/wAA9v/4
@@ -3463,9 +3463,10 @@ for ID in $SERVERS; do
     OUTRES=$OUTRES'@epsf[c h3i]{/var/tmp/EPS}'
     log 'Measurements completed'
     log 'Download and convert an image fron Speedtest.net'
-    $DIRSYSBIN/wget --no-directories --no-parent --quiet --output-document=- "${8}.png"|$DIRSYSBIN/convert PNG:- EPS:/var/tmp/EPS
-    log 'Make PDF'
     OUTNAME=$OUTFILE.$ID.`date +'%Y-%m-%d.%H:%M:%S'`
+    $DIRSYSBIN/wget --no-directories --no-parent --quiet --output-document=$OUTNAME.png "${8}.png" 2>/dev/null
+    $DIRSYSBIN/convert PNG:$OUTNAME.png EPS:/var/tmp/EPS 2>/dev/null
+    log 'Make PDF'
     echo -e $OUTRES | \
             $DIRSYSBIN/enscript --language=PostScript \
                                 --escapes=@ \
@@ -3474,7 +3475,6 @@ for ID in $SERVERS; do
                                 --font=Courier$FONTSIZE \
                                 --output=- 2>/dev/null |\
             $DIRSYSBIN/ps2pdf - $OUTNAME.pdf
-    $DIRSYSBIN/convert EPS:/var/tmp/EPS PNG:$OUTNAME.png
     rm -f /var/tmp/EPS
     playBlam
     else
