@@ -3471,7 +3471,7 @@ for ID in $SERVERS; do
             $DIRSYSBIN/enscript --language=PostScript \
                                 --escapes=@ \
                                 --title="Speedtest for $HSNAME" \
-                                --header='[ %D{%Y-%m-%d} %C ]|[ Page $% of $= ]' \
+                                --header='[ %D{%Y-%m-%d} %C ]| |[ Page $% of $= ]' \
                                 --font=Courier$FONTSIZE \
                                 --output=- 2>/dev/null |\
             $DIRSYSBIN/ps2pdf - $OUTNAME.pdf
