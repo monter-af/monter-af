@@ -3408,27 +3408,40 @@ SERVERS='4484 2278 4275 26129'
 
 case "$PROCESSOR" in
     armv7l)
+            HSARRAY=0
             INTF=wlan0
             MAILATT='-a '
             MAILSUBJ='-s '
             ;;
     *)
+            HSARRAY=0
             INTF=en000rtk
             CABUNDLE=''
             MAILATT='--attach='
             MAILSUBJ='--subject='
             if [ "${MACHTYPE}" = "x86_64-suse-linux" -o "${MACHTYPE}" = "x86_64-suse-linux-gnu" ]; then
-                INTF=eth0
                 CABUNDLE='--ca-certificate=/var/lib/ca-certificates/ca-bundle.pem'
                 MAILATT='-a '
                 MAILSUBJ='-s '
+                HSARRAY=1
+                SPSERVERS=`$DIRSYSBIN/speedtest --accept-license --progress=no --precision=5 --servers --format=json $CABUNDLE --selection-details 2>/dev/null`
+                for ID in $SERVERS; do
+                    HSNAME=`echo $SPSERVERS | $DIRSYSBIN/jq -r -c ".servers[] | select(.id == $ID) | .host"`
+                    HSIP=$( $DIRSYSBIN/host -tA -W1 $HSNAME | $DIRSYSBIN/grep "has address" | $DIRSYSBIN/head -1 | $DIRSYSBIN/cut -d\  -f4 )
+                    HSROUT[$ID]=$( ip route get $HSIP|grep " dev "| $DIRSYSBIN/head -1 | $DIRSYSBIN/cut -d\  -f5 )
+                done
+
             fi
             ;;
 esac
 
+
 for ID in $SERVERS; do
     log 'Start measurements for a server with an identifier '$ID
 
+    if [ $HSARRAY -eq 1 ]; then
+        INTF=${HSROUT[$ID]}
+    fi
     RESSPEED=`$DIRSYSBIN/speedtest --accept-license --progress=no --precision=5 --format=json --server-id=$ID --interface=$INTF $CABUNDLE 2>/dev/null`
     if [ $? -eq 0 ]; then
     TMPRES=$( echo $RESSPEED | $DIRSYSBIN/jq --raw-output ".server.host, .server.location, .ping.latency, .ping.jitter, .packetLoss, \
