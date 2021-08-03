@@ -3401,8 +3401,9 @@ OUTDIR=$HOME/Desktop
 
 OUTFILE=$OUTDIR/'ID'
 
-log "Delete old PDF files in "$OUTDIR
+log "Delete old PDF/PNG files in "$OUTDIR
 rm -f $OUTDIR/*.[pP][dD][fF]
+rm -f $OUTDIR/*.[pP][nN][gG]
 
 SERVERS='4484 2278 4275 26129'
 
@@ -3464,6 +3465,7 @@ for ID in $SERVERS; do
     log 'Download and convert an image fron Speedtest.net'
     $DIRSYSBIN/wget --no-directories --no-parent --quiet --output-document=- "${8}.png"|$DIRSYSBIN/convert PNG:- EPS:/var/tmp/EPS
     log 'Make PDF'
+    OUTNAME=$OUTFILE.$ID.`date +'%Y-%m-%d.%H:%M:%S'`
     echo -e $OUTRES | \
             $DIRSYSBIN/enscript --language=PostScript \
                                 --escapes=@ \
@@ -3471,7 +3473,8 @@ for ID in $SERVERS; do
                                 --header='[ $n ]|[ %D{%Y-%m-%d} %C ]|[ Page $% of $= ]' \
                                 --font=Courier$FONTSIZE \
                                 --output=- 2>/dev/null |\
-            $DIRSYSBIN/ps2pdf - $OUTFILE.$ID.`date +'%Y-%m-%d.%H:%M:%S'`.pdf
+            $DIRSYSBIN/ps2pdf - $OUTNAME.pdf
+    $DIRSYSBIN/convert EPS:/var/tmp/EPS PNG:$OUTNAME.png
     rm -f /var/tmp/EPS
     playBlam
     else
